@@ -1,0 +1,21 @@
+SET(SOURCES ui_Screen1.c
+    ui_Screen2.c
+    ui_Screen3.c
+    ui_Screen4.c
+    ui_Screen5.c
+    ui_Screen6.c
+    ui.c
+    ui_comp_hook.c
+    ui_helpers.c
+    ui_events.c
+    ui_img_1233302218.c
+    fonts/ui_font_Fontb.c
+    fonts/ui_font_Fontbsm.c
+    fonts/ui_font_Fontcan.c
+    fonts/ui_font_Fontnew.c
+    fonts/ui_font_Fontnum.c
+    fonts/ui_font_Fontsim.c
+    fonts/ui_font_Fontsimsmall.c
+    fonts/ui_font_Fontsmall.c)
+
+add_library(ui ${SOURCES})
