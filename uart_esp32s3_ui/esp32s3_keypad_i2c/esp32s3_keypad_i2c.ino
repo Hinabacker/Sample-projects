@@ -163,9 +163,9 @@ void loop()
   if(adhr)
   {
     Serial.println("adhr true");
-    const char *mobileNumber = lv_textarea_get_text(ui_TextAreaaadhaar2);
-    Serial.println(mobileNumber);
-    sendRS485Data(mobileNumber);
+    const char *aadhaarNumber = lv_textarea_get_text(ui_TextAreaaadhaar2);
+    Serial.println(aadhaarNumber);
+    sendRS485Data(aadhaarNumber);
     adhr = false;
     
   }
