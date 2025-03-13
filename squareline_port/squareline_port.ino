@@ -67,7 +67,7 @@ void sendToGoogleSheets() {
     
     String timestamp(timeStr);           // Remove leading/trailing spaces
 
-    String urlFinal = "https://script.google.com/macros/s/"+GOOGLE_SCRIPT_ID+"/exec?"+"time=" + timeLabel + "&weight=" + String(weight) + "&item=" + String(itemsel) +
+    String urlFinal = "https://script.google.com/macros/s/"+GOOGLE_SCRIPT_ID+"/exec?"+"time=" + timeLabel + "&weight=" + String(weight) + "&item=" + String(itemSelected) +
                            "&farmerid=" + String(farmerId) + "&farmername=" + String(farmerName) + "&region=" + String(region);
 
     // String urlFinal = "https://script.google.com/macros/s/"+GOOGLE_SCRIPT_ID+"/exec?"+"time=" + timestamp + "&uid=" + String(uid) + "&item=" + String(item);
