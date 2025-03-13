@@ -5,6 +5,7 @@
 #include "lvgl_v8_port.h"
 
 #include <WiFi.h>
+#include <HTTPClient.h>
 #include "time.h"
 
 using namespace esp_panel::drivers;
@@ -19,9 +20,19 @@ String receivedData;
 static char timeStr[40];
 char itemSelected[32];
 String itemsel;
+String weightValue;
+
+String weight;
+String qrLabel;
+String timeLabel;
+String opId;
+String farmerId;
+String farmerName;
+String region;
 
 const char* ssid       = "hictros_wifi";
 const char* password   = "hictros@2024";
+String GOOGLE_SCRIPT_ID = "AKfycbxb1VWTp7znVTcvs2s5cRu8Cw9Dx2MbRAwIXkl0a_9-inLqNe7jl7yxCQSf5j9Rc_cD";
 
 const char* ntpServer           = "pool.ntp.org";
 const long  gmtOffset_sec       = 19800;
@@ -39,15 +50,52 @@ void printLocalTime()
   lv_label_set_text(ui_timeLabel, timeStr);
 }
 
-String parseRS485Data(String receivedData) {
-
+void parseRS485Data(String receivedData) 
+{
   if (receivedData.length() > 3) {  // Ensure valid data
-    String weightValue = receivedData.substring(3);  // Extract weight (after first 3 chars)
+    weightValue = receivedData.substring(3);  // Extract weight (after first 3 chars)
     Serial.print("Extracted Weight: ");
     Serial.println(weightValue);
   } 
   else {
     Serial.println("Invalid data received");
+  }
+}
+void sendToGoogleSheets() {
+  if (WiFi.status() == WL_CONNECTED) {
+    HTTPClient http;
+    
+    String timestamp(timeStr);           // Remove leading/trailing spaces
+
+    String urlFinal = "https://script.google.com/macros/s/"+GOOGLE_SCRIPT_ID+"/exec?"+"time=" + timeLabel + "&weight=" + String(weight) + "&item=" + String(itemsel) +
+                           "&farmerid=" + String(farmerId) + "&farmername=" + String(farmerName) + "&region=" + String(region);
+
+    // String urlFinal = "https://script.google.com/macros/s/"+GOOGLE_SCRIPT_ID+"/exec?"+"time=" + timestamp + "&uid=" + String(uid) + "&item=" + String(item);
+    // Construct URL with raw strings (no encoding)
+    // String urlFinal = "https://script.google.com/macros/s/" + GOOGLE_SCRIPT_ID + "/exec?" + "time=" + timestamp;
+    //                   "time=" + time +
+    //                   "&item=" + item +
+    //                   "&weight=" + weight +
+    //                   "&uid=" + uid;
+
+    Serial.print("Sending to Google Sheets: ");
+    Serial.println(urlFinal);
+
+    http.begin(urlFinal.c_str());
+    http.setFollowRedirects(HTTPC_STRICT_FOLLOW_REDIRECTS);
+
+    int httpCode = http.GET();
+
+    if (httpCode > 0) {
+      String payload = http.getString();
+      Serial.println("Response: " + payload);
+    } else {
+      Serial.println("Error - HTTP Code: " + String(httpCode));
+    }
+
+    http.end();
+  } else {
+    Serial.println("WiFi not connected");
   }
 }
 
@@ -57,9 +105,9 @@ void receiveRS485Data() {
     receivedData.trim(); // Remove any trailing newline characters
 
     // if (receivedData == "Success") {
-      Serial.println(receivedData);
-      String weightData = parseRS485Data(receivedData);
-      lv_label_set_text(ui_weightLabel, weightData.c_str());
+      // Serial.println(receivedData);
+      parseRS485Data(receivedData);
+      lv_label_set_text(ui_weightLabel, weightValue.c_str());
       // lv_obj_add_flag(ui_Button1, LV_OBJ_FLAG_HIDDEN);
       // lv_obj_clear_flag(ui_Container1, LV_OBJ_FLAG_HIDDEN);
 
@@ -125,6 +173,8 @@ void handleTextInput()
     lv_textarea_set_text(ui_TextArea, "");
     data = false;
   }
+  lv_obj_clear_state(ui_submitButton, LV_STATE_DISABLED);
+    lv_obj_add_state(ui_submitButton, LV_STATE_USER_1);
 }
 
 void clearFormFields()
@@ -147,15 +197,16 @@ void changeState()
 {
   lv_dropdown_get_selected_str(ui_Dropdown1, itemSelected, sizeof(itemSelected));
 
-  String weight = lv_label_get_text(ui_weightLabel);
-  String qrLabel = lv_label_get_text(ui_qrLabel);
-  String timeLabel = lv_label_get_text(ui_timeLabel);
-  String opId = lv_textarea_get_text(ui_timeLabel);
-  String farmerId = lv_textarea_get_text(ui_fidTextArea);
-  String farmerName = lv_textarea_get_text(ui_fnameTextArea);
-  String region = lv_textarea_get_text(ui_regionTextArea);
+  String weights = lv_label_get_text(ui_weightLabel);
+  String qrLabels = lv_label_get_text(ui_qrLabel);
+  String timeLabels = lv_label_get_text(ui_timeLabel);
+  String opIds = lv_textarea_get_text(ui_timeLabel);
+  String farmerIds = lv_textarea_get_text(ui_fidTextArea);
+  String farmerNames = lv_textarea_get_text(ui_fnameTextArea);
+  String regions = lv_textarea_get_text(ui_regionTextArea);
 
   if(weight.length() > 0 && qrLabel.length() > 0 && timeLabel.length() > 0 && opId.length() > 0 && farmerId.length() > 0 && farmerName.length() > 0 && region.length() > 0 && strlen(itemSelected) > 0 && String(itemSelected) != "                             -        ")
+  
   {
     lv_obj_clear_state(ui_submitButton, LV_STATE_DISABLED);
     lv_obj_add_state(ui_submitButton, LV_STATE_USER_1);
@@ -227,19 +278,22 @@ void loop()
   receiveRS485Data();
   printLocalTime();
   handleTextInput();
-  changeState();
+  // changeState();
 
   if(submit)
   {
     lv_dropdown_get_selected_str(ui_Dropdown1, itemSelected, sizeof(itemSelected));
 
-    String weight = lv_label_get_text(ui_weightLabel);
-    String qrLabel = lv_label_get_text(ui_qrLabel);
-    String timeLabel = lv_label_get_text(ui_timeLabel);
-    String opId = lv_textarea_get_text(ui_timeLabel);
-    String farmerId = lv_textarea_get_text(ui_fidTextArea);
-    String farmerName = lv_textarea_get_text(ui_fnameTextArea);
-    String region = lv_textarea_get_text(ui_regionTextArea);
+    weight = lv_label_get_text(ui_weightLabel);
+    qrLabel = lv_label_get_text(ui_qrLabel);
+    timeLabel = lv_label_get_text(ui_timeLabel);
+    opId = lv_textarea_get_text(ui_timeLabel);
+    farmerId = lv_textarea_get_text(ui_fidTextArea);
+    farmerName = lv_textarea_get_text(ui_fnameTextArea);
+    region = lv_textarea_get_text(ui_regionTextArea);
+    Serial.println(opId);
+
+    sendToGoogleSheets();
 
     lvgl_port_lock(-1);
     lv_dropdown_set_selected(ui_Dropdown1, 0);
