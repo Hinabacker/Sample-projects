@@ -80,7 +80,7 @@ void ui_Screen1_screen_init(void)
     lv_obj_set_height(ui_weightLabel, LV_SIZE_CONTENT);    /// 1
     lv_obj_set_align(ui_weightLabel, LV_ALIGN_CENTER);
     lv_label_set_text(ui_weightLabel, "");
-    lv_obj_set_style_text_font(ui_weightLabel, &lv_font_montserrat_22, LV_PART_MAIN | LV_STATE_DEFAULT);
+    lv_obj_set_style_text_font(ui_weightLabel, &lv_font_montserrat_24, LV_PART_MAIN | LV_STATE_DEFAULT);
 
     ui_Label4 = lv_label_create(ui_Container1);
     lv_obj_set_width(ui_Label4, LV_SIZE_CONTENT);   /// 1
@@ -259,7 +259,7 @@ void ui_Screen1_screen_init(void)
     lv_obj_set_width(ui_qrLabel, LV_SIZE_CONTENT);   /// 1
     lv_obj_set_height(ui_qrLabel, LV_SIZE_CONTENT);    /// 1
     lv_obj_set_align(ui_qrLabel, LV_ALIGN_CENTER);
-    lv_label_set_text(ui_qrLabel, "3452");
+    lv_label_set_text(ui_qrLabel, "");
     lv_obj_set_style_text_font(ui_qrLabel, &lv_font_montserrat_22, LV_PART_MAIN | LV_STATE_DEFAULT);
 
     ui_Label11 = lv_label_create(ui_Screen1);

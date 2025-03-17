@@ -94,7 +94,7 @@ void ui_event_submitButton(lv_event_t * e)
 void ui_event_opidTextArea(lv_event_t * e)
 {
     lv_event_code_t event_code = lv_event_get_code(e);
-    v_textarea_set_cursor_click_pos(ui_opidTextArea, false);
+    lv_textarea_set_cursor_click_pos(ui_opidTextArea, false);
     lv_obj_clear_state(ui_opidTextArea, LV_STATE_FOCUSED); 
 
     if(event_code == LV_EVENT_PRESSED) {
