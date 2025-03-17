@@ -67,7 +67,7 @@ void sendToGoogleSheets() {
     
     String timestamp(timeStr);           // Remove leading/trailing spaces
 
-    String urlFinal = "https://script.google.com/macros/s/"+GOOGLE_SCRIPT_ID+"/exec?"+"time=" + timeLabel + "&weight=" + String(weight) + "&item=" + String(itemSelected) +
+    String urlFinal = "https://script.google.com/macros/s/"+GOOGLE_SCRIPT_ID+"/exec?"+"time=" + timeLabel + "&weight=" + String(weight) + "&opid=" + String(opId) + "&item=" + String(itemSelected) +
                            "&farmerid=" + String(farmerId) + "&farmername=" + String(farmerName) + "&region=" + String(region);
 
     // String urlFinal = "https://script.google.com/macros/s/"+GOOGLE_SCRIPT_ID+"/exec?"+"time=" + timestamp + "&uid=" + String(uid) + "&item=" + String(item);
@@ -104,41 +104,8 @@ void receiveRS485Data() {
     receivedData = RS485.readStringUntil('\n'); // Read incoming data
     receivedData.trim(); // Remove any trailing newline characters
 
-    // if (receivedData == "Success") {
-      // Serial.println(receivedData);
-      parseRS485Data(receivedData);
-      lv_label_set_text(ui_weightLabel, weightValue.c_str());
-      // lv_obj_add_flag(ui_Button1, LV_OBJ_FLAG_HIDDEN);
-      // lv_obj_clear_flag(ui_Container1, LV_OBJ_FLAG_HIDDEN);
-
-      // // Get the current UI values
-      // String time = lv_label_get_text(ui_timeLabel);
-      // String weight = lv_label_get_text(ui_weightLabel);
-      // String uid = lv_label_get_text(ui_uidLabel);
-      // Send data to Google Sheets
-      // sendToGoogleSheets(time, itemsel, weight, uid);
-
-      // lv_timer_create(restoreUI, 2000, NULL);
-    // }
-
-    // else if(receivedData == "Failed") { 
-    //   Serial.println(receivedData);
-    //   lv_obj_add_flag(ui_Button1, LV_OBJ_FLAG_HIDDEN);
-    //   lv_obj_clear_flag(ui_Panel5, LV_OBJ_FLAG_HIDDEN);
-
-    //   lv_timer_create(writeFail, 4000, NULL);
-    // }
-
-    // else if (receivedData.endsWith("g")) 
-    // { 
-    //   lv_label_set_text(ui_weightLabel, receivedData.c_str());
-    // } 
-
-    // else{ 
-    //   Serial.print("ID: ");
-    //   Serial.println(receivedData);
-    //   lv_label_set_text(ui_uidLabel, receivedData.c_str());
-    // }
+    parseRS485Data(receivedData);
+    lv_label_set_text(ui_weightLabel, weightValue.c_str());
 
   }
 }
@@ -197,13 +164,13 @@ void changeState()
 {
   lv_dropdown_get_selected_str(ui_Dropdown1, itemSelected, sizeof(itemSelected));
 
-  String weights = lv_label_get_text(ui_weightLabel);
-  String qrLabels = lv_label_get_text(ui_qrLabel);
-  String timeLabels = lv_label_get_text(ui_timeLabel);
-  String opIds = lv_textarea_get_text(ui_timeLabel);
-  String farmerIds = lv_textarea_get_text(ui_fidTextArea);
-  String farmerNames = lv_textarea_get_text(ui_fnameTextArea);
-  String regions = lv_textarea_get_text(ui_regionTextArea);
+  String weight = lv_label_get_text(ui_weightLabel);
+  String qrLabel = lv_label_get_text(ui_qrLabel);
+  String timeLabel = lv_label_get_text(ui_timeLabel);
+  String opId = lv_textarea_get_text(ui_opidTextArea);
+  String farmerId = lv_textarea_get_text(ui_fidTextArea);
+  String farmerName = lv_textarea_get_text(ui_fnameTextArea);
+  String region = lv_textarea_get_text(ui_regionTextArea);
 
   if(weight.length() > 0 && qrLabel.length() > 0 && timeLabel.length() > 0 && opId.length() > 0 && farmerId.length() > 0 && farmerName.length() > 0 && region.length() > 0 && strlen(itemSelected) > 0 && String(itemSelected) != "                             -        ")
   
@@ -278,7 +245,7 @@ void loop()
   receiveRS485Data();
   printLocalTime();
   handleTextInput();
-  // changeState();
+  changeState();
 
   if(submit)
   {
@@ -287,7 +254,7 @@ void loop()
     weight = lv_label_get_text(ui_weightLabel);
     qrLabel = lv_label_get_text(ui_qrLabel);
     timeLabel = lv_label_get_text(ui_timeLabel);
-    opId = lv_textarea_get_text(ui_timeLabel);
+    opId = lv_textarea_get_text(ui_opidTextArea);
     farmerId = lv_textarea_get_text(ui_fidTextArea);
     farmerName = lv_textarea_get_text(ui_fnameTextArea);
     region = lv_textarea_get_text(ui_regionTextArea);
