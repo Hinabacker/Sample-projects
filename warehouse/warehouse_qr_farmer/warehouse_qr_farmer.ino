@@ -106,7 +106,7 @@ void receiveRS485Data() {
     receivedData = RS485.readStringUntil('\n'); // Read incoming data
     receivedData.trim(); // Remove any trailing newline characters
 
-      // parseRS485Data(receivedData);
+      parseRS485Data(receivedData);
 
       lvgl_port_lock(-1);
       lv_label_set_text(ui_weightLabel, weightValue.c_str());
@@ -179,8 +179,8 @@ void changeState()
   String farmerNames = lv_textarea_get_text(ui_fnameTextArea);
   String regions = lv_textarea_get_text(ui_regionTextArea);
 
-  if(timeLabels.length() > 0 && opIds.length() > 0 && farmerIds.length() > 0 && farmerNames.length() > 0 && regions.length() > 0 && lv_dropdown_get_selected(ui_Dropdown1) != 0)
-  // weights.length() > 0 && 
+  if(weights.length() > 0 && timeLabels.length() > 0 && opIds.length() > 0 && farmerIds.length() > 0 && farmerNames.length() > 0 && regions.length() > 0 && lv_dropdown_get_selected(ui_Dropdown1) != 0)
+  
   {
     lv_obj_clear_state(ui_submitButton, LV_STATE_DISABLED);
     lv_obj_add_state(ui_submitButton, LV_STATE_USER_1);
